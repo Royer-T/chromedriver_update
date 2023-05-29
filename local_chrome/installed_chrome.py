@@ -15,7 +15,7 @@ class Chrome:
 
         :return: Version of Google Chrome installed on the system.
          Returns None if Chrome is not installed or the registry key is not found.
-        :rtype: str
+        :rtype: str or None
         """
         try:
             with OpenKey(HKEY_CURRENT_USER, r"Software\Google\Chrome\BLBeacon") as reg_key:
@@ -41,7 +41,12 @@ class Chrome:
         """
         complete_version = Chrome.chrome_version()
 
-        major_marker = complete_version.index('.')
-        installed_major_chrome_version = complete_version[:major_marker]
+        try:
+            major_version = complete_version.split('.', 1)[0]
+            return major_version
+        except IndexError:
+            # Handle the case where the version string does not contain a dot
+            # separator
+            return complete_version
 
         return installed_major_chrome_version
